@@ -202,14 +202,26 @@ public class ServiceTest {
 		int status = userService.checkAns(email, answer);
 		assertEquals(2, status);
 	}
+	
+	@Test
+	public void checkAnsWithNullTest() {
+		String email = "raj@gmail.com";
+		String answer = "Hello";
+
+		UserBean user = new UserBean();
+
+		when(userDaoImpl.findByEmailAndAnswer(email, answer)).thenReturn(null);
+		int status = userService.checkAns(email, answer);
+		assertEquals(0, status);
+	}
 
 	@Test
 	public void saveUserTest() {
 
-		userDaoImpl.save(expectedUser);
+		when(userDaoImpl.save(expectedUser)).thenReturn(expectedUser);
 
 		int status = userService.saveUser(expectedUser);
-		assertEquals(0, status);
+		assertEquals(expectedUser.getUserId(), status);
 
 	}
 
@@ -219,6 +231,16 @@ public class ServiceTest {
 
 		when(userDaoImpl.save(user)).thenThrow(new RuntimeException());
 		assertThrows(RuntimeException.class, () -> userService.saveUser(user));
+	}
+	
+	@Test
+	public void saveUserWithNullTest() throws Exception {
+		UserBean user = new UserBean();
+		user.setFirstName("ritish");
+
+		when(userDaoImpl.save(user)).thenReturn(null);
+		int status = userService.saveUser(expectedUser);
+		assertEquals(0, status);
 	}
 
 	@Test
